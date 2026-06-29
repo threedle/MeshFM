@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>MeshFM</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="assets/threedle_icon.png">
+  <title>2D Features Are All You Need for 3D Shape Understanding</title>
+  <link href="style.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* from https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css */
+    @font-face {
+      font-family: 'Academicons';
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: url('https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/fonts/academicons.eot') format('embedded-opentype'),
+        url('https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/fonts/academicons.ttf') format('truetype'),
+        url('https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/fonts/academicons.woff') format('woff'),
+        url('https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/fonts/academicons.svg') format('svg');
+    }
+
+    .ai {
+      font-family: 'Academicons';
+      font-weight: 400;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      line-height: 1;
+    }
+
+    .ai-arxiv:before {
+      content: "\e974";
+    }
+  </style>
+
+  <meta name="description" content="2D Features Are All You Need for 3D Shape Understanding">
+  <meta name="keywords" content="Foundation Models, 3D Shape Understanding, Feature Distillation, Part Segmentation, Dense Correspondence, Mesh Deformation">
+
+  <meta property='og:title' content='MeshFM: 2D Features Are All You Need for 3D Shape Understanding' />
+  <meta property='og:url' content='#' />
+  <meta property='og:image' content='assets/teaser/teaser.png' />
+  <meta property="og:type" content="website" />
+</head>
+
+<body>
+  <section class="intro" aria-label="intro">
+    <a href="https://3dl.cs.uchicago.edu" aria-label="3DL threedle home">
+      <div class="logobox">
+        <img src="assets/threedle_icon.png" alt="3DL threedle logo">
+      </div>
+    </a>
+    <div class="titlebox">
+      <h1>2D Features Are All You Need<wbr> for<i class="med-nbsp" aria-hidden="true"></i>3D Shape Understanding</h1>
+    </div>
+    <nav>
+      <a target="_blank" href="#" class="venue" aria-label="venue"><i class="icon fas fa-map-marker-alt" aria-hidden="true"></i>ECCV
+        2026</a>
+      <a target="_blank" href="#" aria-label="paper pdf">
+        <i class="icon fas fa-file-pdf"></i>Paper
+      </a>
+      <a target="_blank" href="#"><i class="icon ai ai-arxiv"></i>arXiv</a>
+      <a target="_blank" href="#" aria-label="code github"><i class="icon fab fa-github"></i>Code</a>
+    </nav>
+    <div class="authors" aria-label="authors">
+      <span>Jinfan Zhou<sup>*</sup></span>
+      <span>Richard Liu<sup>*</sup></span>
+      <span><a href="https://itailang.github.io/">Itai Lang</a></span>
+      <span><a href="https://people.cs.uchicago.edu/~ranahanocka/">Rana Hanocka</a></span>
+    </div>
+    <div class="affiliations" aria-label="affiliations">University of Chicago</div>
+    <div class="note" aria-label="note"><sup>*</sup>Equal contribution</div>
+  </section>
+
+  <!-- Floating mini-TOC pinned to the right edge on wide screens. JS
+       marks the entry corresponding to the current section as active. -->
+  <aside class="side-toc" aria-label="Page sections" data-toc>
+    <a href="#abstract" data-section="abstract">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Abstract</span>
+    </a>
+    <a href="#key-idea" data-section="key-idea">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Key Idea</span>
+    </a>
+    <a href="#method" data-section="method">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Method</span>
+    </a>
+    <a href="#gallery" data-section="gallery">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Gallery</span>
+    </a>
+    <a href="#robustness" data-section="robustness">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Robustness</span>
+    </a>
+    <a href="#applications" data-section="applications">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Applications</span>
+    </a>
+    <a href="#comparison" data-section="comparison">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">Comparison</span>
+    </a>
+    <a href="#bibtex" data-section="bibtex">
+      <span class="side-toc-dot" aria-hidden="true"></span>
+      <span class="side-toc-label">BibTeX</span>
+    </a>
+  </aside>
+
+  <section class="teaser" aria-label="teaser">
+    <div class="imgsflex">
+      <figure class="blcent">
+        <img class="fullwidth" style="margin: 0 0" src="assets/teaser/teaser.png"
+          alt="MeshFM teaser: general-purpose 3D features applied to segmentation, correspondence, and deformation.">
+      </figure>
+    </div>
+    <p class="graybox">
+      <em>MeshFM</em> is a feedforward model that computes general-purpose features for 3D shapes. The learned features
+      are discriminative and capture meaningful properties across diverse shapes and complex geometries. Importantly,
+      the features are multi-purpose, and can be applied in a <em>zero-shot</em> manner for a variety of downstream
+      tasks, such as segmentation, correspondence, and deformation.
+    </p>
+  </section>
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p class="graybox">
+      We present <em>MeshFM</em>, an efficient feedforward framework for extracting rich features from 3D inputs. Our
+      method distills 2D features from visual foundation models into 3D. We train a feedforward network to directly
+      predict 3D features without requiring optimization during inference. The approach utilizes a two-stage training
+      strategy. First, we optimize a feature field in 3D using only 2D feature supervision. Second, we train a network
+      to regress this feature field. The entire procedure requires no 3D annotation, instead relying on the powerful
+      information in 2D foundation models. We demonstrate that our learned features can be immediately applied to
+      downstream tasks, including part segmentation, dense correspondence, and mesh deformation. Extensive experiments
+      show that <em>MeshFM</em>, trained solely with 2D supervision, performs on par with methods trained explicitly
+      with 3D supervision, even without task-specific fine-tuning. Moreover, our model is trained to be robust to
+      extreme rotations of the input objects.
+    </p>
+  </section>
+  <section id="key-idea">
+    <h2>Key Idea</h2>
+    <img class="halfwidthflex blcent" style="width: calc(0.8 * var(--halfwidthflex-w))"
+      src="assets/key_idea/feature_aliasing.png" alt="feature aliasing correction via fine-grained segmentation.">
+    <p class="graybox">
+      <b>Feature aliasing correction.</b> Before distilling 2D features into 3D, we correct the feature aliasing created
+      by patch-based image encoder architectures through fine-grained image segmentation. The segmentation groups define
+      pixel clusters that are assumed to have similar deep features. Pixels with features substantially different than
+      the cluster median are replaced by the median. The resulting feature map has much less blurring at semantic
+      boundaries and more stable features within semantic groups &mdash; yielding cleaner supervision for the 3D feature
+      field.
+    </p>
+  </section>
+  <section id="method">
+    <h2>Method</h2>
+    <img class="fullwidth blcent" src="assets/method.png" alt="MeshFM two-stage training pipeline overview.">
+    <p class="graybox">
+      <b>Training pipeline overview.</b> The training phase of <em>MeshFM</em> includes two stages.
+      <span class="step-circle">1</span> In the first stage, we distill the information from a 2D foundation model into
+      3D feature fields: 2D feature maps are extracted from multi-view renderings of the mesh and projected to the mesh
+      surface, and a neural model learns to map 3D coordinates on the mesh to the reference features.
+      <span class="step-circle">2</span> In the second stage, we use the teacher feature fields to train a feedforward
+      feature prediction model. The model takes a point cloud sampled from the mesh surface and learns to output the
+      point features from the supervising 3D teacher fields. At inference, the feedforward model predicts surface
+      features for unseen shapes in a single pass, with no per-shape optimization.
+    </p>
+  </section>
+  <section id="gallery">
+    <h2>Gallery</h2>
+    <img class="fullwidth blcent" src="assets/gallery.png"
+      alt="hierarchical part segmentation results at increasing granularity.">
+    <p class="graybox">
+      <b>Hierarchical part segmentation.</b> Our method can segment the mesh at an increasing granularity by simply
+      increasing the number of feature clusters (from left to right). Notably, we support a wide range of part counts,
+      distinguish part instances (<em>e.g.</em>, the character's boots), and capture fine-grained shape details
+      (<em>e.g.</em>, the band on the rifle stock).
+    </p>
+  </section>
+  <section id="robustness">
+    <h2>Robustness</h2>
+    <img class="fullwidth blcent" src="assets/robustness/rotation.png"
+      alt="segmentation results that stay consistent under large rotations.">
+    <p class="graybox">
+      <b>Rotation robustness.</b> We visualize our segmentation results for different rotations of the input shape.
+      <em>MeshFM</em> is highly robust to rotations, where the segmentation remains consistent under large rotations in
+      the full SO(3) group.
+    </p>
+  </section>
+  <section id="applications">
+    <h2>Applications</h2>
+    <div class="imgsflex">
+      <figure class="halfwidthflex" style="width: calc(0.94 * var(--halfwidthflex-w))">
+        <img src="assets/applications/correspondence.jpg"
+          alt="dense correspondence visualized by color transfer between shape pairs.">
+        <figcaption class="caption">Dense correspondence</figcaption>
+      </figure>
+      <figure class="halfwidthflex" style="width: calc(0.94 * var(--halfwidthflex-w))">
+        <img src="assets/applications/deformation_placeholder.svg"
+          alt="interactive mesh deformation placeholder.">
+        <figcaption class="caption">Interactive deformation</figcaption>
+      </figure>
+    </div>
+    <p class="graybox">
+      The <em>same</em> general-purpose features power <em>multiple</em> downstream tasks, zero-shot.<br>
+      <br>
+      <b>Dense correspondence.</b> Our mesh features are consistent across shapes and enable dense matching between
+      shapes even when shapes are not in a canonical pose and are not aligned. The correspondence is visualized by color
+      transfer over each pair, and applies across various domains and geometries &mdash; household objects and vehicles
+      with sharp edges, as well as animals with smooth surfaces.<br>
+      <br>
+      <b>Interactive deformation.</b> The deformation weights derived from our features enable smooth, semantic-aware
+      deformations of the input shape, regardless of its initial orientation. (Part segmentation, our third application,
+      is shown in the Gallery above.)
+    </p>
+  </section>
+  <section id="comparison">
+    <h2>Comparison</h2>
+    <figure class="blcent" style="margin-bottom: 1.2rem;">
+      <img class="fullwidth" src="assets/comparison/seg_comparison.png"
+        alt="part segmentation comparison against PartField.">
+      <figcaption class="caption">Part segmentation</figcaption>
+    </figure>
+    <figure class="blcent">
+      <img class="fullwidth" src="assets/comparison/corr_comparison.png"
+        alt="dense correspondence comparison against baselines.">
+      <figcaption class="caption">Dense correspondence</figcaption>
+    </figure>
+    <p class="graybox">
+      <b>Part segmentation.</b> Our method segments the mesh without training on any 3D annotations, performing on par
+      with PartField, which is directly trained with 3D segmentation annotation. Even when our segmentation differs from
+      the ground truth, it remains semantically meaningful (such as the decoration on the dress).<br>
+      <br>
+      <b>Dense correspondence.</b> While other methods fail on these examples, our mesh features are consistent across
+      shapes and enable dense matching even when shapes are not in a canonical pose and are not aligned.
+    </p>
+  </section>
+  <section id="bibtex">
+    <h2>BibTeX</h2>
+    <div class="bibtex-wrapper">
+      <button type="button" class="bibtex-copy-btn" data-target="bibtex-code"
+        aria-label="Copy BibTeX entry to clipboard">
+        <span class="bibtex-copy-icon" aria-hidden="true">
+          <i class="far fa-copy"></i>
+        </span>
+        <span class="bibtex-copy-text">Copy</span>
+      </button>
+      <pre class="graybox" id="bibtex-code">@InProceedings{zhou2026meshfm,
+  author    = {Zhou, Jinfan and Liu, Richard and Lang, Itai and Hanocka, Rana},
+  title     = {{2D Features Are All You Need for 3D Shape Understanding}},
+  booktitle = {Proceedings of the European Conference on Computer Vision (ECCV)},
+  year      = {2026}
+}</pre>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <p>
+      This webpage was adapted from the <a href="https://threedle.github.io/geometry-in-style/" target="_blank" rel="noopener noreferrer">Geometry in Style</a>
+      webpage. We thank <a href="https://people.cs.uchicago.edu/~namanh/" target="_blank" rel="noopener noreferrer">Nam Anh Dinh</a> for creating this template.
+    </p>
+  </footer>
+
+  <script>
+    // ---- Heading anchor links (deep-link helpers) -----------------
+    // For every <section id="..."> with an <h2>,
+    // inject a small "#" link before the heading text so visitors
+    // can hover to reveal and copy a permalink to that section.
+    (function () {
+        var sections = document.querySelectorAll('section[id] h2');
+        sections.forEach(function (h) {
+            var section = h.closest('section[id]');
+            if (!section) return;
+            if (h.querySelector('.heading-anchor')) return;
+            var a = document.createElement('a');
+            a.className = 'heading-anchor';
+            a.href = '#' + section.id;
+            a.setAttribute('aria-label', 'Permalink to ' + h.textContent.trim());
+            a.textContent = '#';
+            h.insertBefore(a, h.firstChild);
+        });
+    })();
+
+    // ---- Side TOC + active section highlight ----------------------
+    // One IntersectionObserver tracks every <section id>; the section
+    // with the largest visible area "wins" and its corresponding
+    // entry in the side TOC gets .is-active.
+    (function () {
+        var sections = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
+        var tocLinks = document.querySelectorAll('.side-toc a[data-section]');
+        if (!sections.length) return;
+
+        var visibility = Object.create(null);
+
+        function setActive(id) {
+            tocLinks.forEach(function (a) {
+                a.classList.toggle('is-active', a.dataset.section === id);
+            });
+        }
+
+        if ('IntersectionObserver' in window) {
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    visibility[entry.target.id] = entry.intersectionRatio;
+                });
+                var bestId = null;
+                var bestRatio = 0;
+                Object.keys(visibility).forEach(function (id) {
+                    if (visibility[id] > bestRatio) {
+                        bestRatio = visibility[id];
+                        bestId = id;
+                    }
+                });
+                if (bestId && bestRatio > 0) setActive(bestId);
+            }, {
+                // Treat the middle 60% of the viewport as the
+                // "reading area"; whichever section overlaps it most
+                // becomes the active one.
+                rootMargin: '-20% 0px -20% 0px',
+                threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+            });
+            sections.forEach(function (s) { obs.observe(s); });
+        }
+
+        // Reveal the side TOC once the user has scrolled past the intro.
+        var toc = document.querySelector('[data-toc]');
+        if (toc) {
+            var introH = (document.querySelector('.intro') || {}).offsetHeight || 400;
+            var onScroll = function () {
+                if (window.pageYOffset > introH * 0.6) toc.classList.add('is-visible');
+                else toc.classList.remove('is-visible');
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        }
+    })();
+  </script>
+
+  <script>
+    // ---- BibTeX copy-to-clipboard ---------------------------------
+    (function () {
+      var btn = document.querySelector('.bibtex-copy-btn');
+      if (!btn) return;
+      var resetTimer = null;
+      btn.addEventListener('click', function () {
+        var target = document.getElementById(btn.dataset.target);
+        if (!target) return;
+        var text = target.innerText;
+        var done = function (ok) {
+          btn.classList.remove('is-success', 'is-error');
+          btn.classList.add(ok ? 'is-success' : 'is-error');
+          var label = btn.querySelector('.bibtex-copy-text');
+          if (label) label.textContent = ok ? 'Copied!' : 'Copy failed';
+          if (resetTimer) clearTimeout(resetTimer);
+          resetTimer = setTimeout(function () {
+            btn.classList.remove('is-success', 'is-error');
+            if (label) label.textContent = 'Copy';
+          }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done(true); },
+            function () { done(false); });
+        } else {
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            done(ok);
+          } catch (err) {
+            done(false);
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

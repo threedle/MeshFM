@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Deformation figure coming soon">
+  <rect width="800" height="500" fill="#e9f0f7"/>
+  <rect x="12" y="12" width="776" height="476" rx="14" fill="none" stroke="#4e649e" stroke-width="3" stroke-dasharray="12 10"/>
+  <g fill="#263966" font-family="'Manrope', sans-serif" text-anchor="middle">
+    <text x="400" y="238" font-size="38" font-weight="700">Interactive Deformation</text>
+    <text x="400" y="288" font-size="24" font-weight="400" fill="#537998">figure coming soon</text>
+  </g>
+</svg>
