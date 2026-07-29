@@ -237,11 +237,11 @@
     <p class="comparison-instruction"><i class="fas fa-hand-pointer" aria-hidden="true"></i>
       Drag any result to rotate it, scroll to zoom. Shapes are shown in the rotated poses used for the benchmark.</p>
     <div class="grid-container-5 grid-header" aria-hidden="true">
+      <p class="comparison-label">GT</p>
+      <p class="comparison-label">Ours</p>
       <p class="comparison-label">Dense Matcher</p>
       <p class="comparison-label">Diff3F</p>
       <p class="comparison-label">PartField</p>
-      <p class="comparison-label">Ours</p>
-      <p class="comparison-label">GT</p>
     </div>
     <div class="grid-container-5 grid-row" data-seg-row="figure"></div>
     <div class="grid-container-5 grid-row" data-seg-row="character"></div>
@@ -404,7 +404,7 @@
         item.appendChild(box);
         return item;
       }
-      var segMethods = ['densematcher', 'diff3f', 'partfield', 'meshfm', 'groundtruth'];
+      var segMethods = ['groundtruth', 'meshfm', 'densematcher', 'diff3f', 'partfield'];
       document.querySelectorAll('[data-seg-row]').forEach(function (row) {
         var obj = row.dataset.segRow;
         segMethods.forEach(function (m) {
