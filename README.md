@@ -23,8 +23,6 @@ for that branch. The page is fully self-contained except for two CDN dependencie
 ## TODO before publishing
 
 - **Nav links** — `Paper`, `arXiv`, and `Code` buttons currently point to `#`. Replace with real URLs.
-- **Deformation figure** — `assets/applications/deformation_placeholder.svg` is a placeholder. Drop in the real figure
-  and update the `<img src>` in the Applications section.
 - **Image sizes** — the figures copied from the LaTeX source are large (the page is ~37 MB total). Downsize / re-encode
   (e.g. convert big PNGs to optimized JPG/WebP at web resolution) before publishing for faster loads.
 - **Author links** — Jinfan Zhou and Richard Liu are plain text; add homepage links if available.
@@ -41,6 +39,10 @@ Figures were copied from `../ECCV_2026_MeshFM/figures/` and renamed:
 | `method.png` | `meshfm_cam.png` |
 | `gallery.png` | `seg_viz_hie_v4.drawio.png` |
 | `robustness/rotation.png` | `seg_rot_v1.drawio.png` |
-| `applications/correspondence.jpg` | `corr_viz.jpg` |
 | `comparison/seg_comparison.png` | `seg_comp_v2.drawio.png` |
 | `comparison/corr_comparison.png` | `corr_compare_v3.drawio.png` |
+
+`gallery.png`, `seg_comparison.png` and `corr_comparison.png` are the static
+originals; those three sections now render the underlying meshes interactively
+from `assets/models/` (see `../INTERACTIVE_3D_HANDOFF.md`). The Applications
+section (dense-correspondence pairs + deformation placeholder) was removed.

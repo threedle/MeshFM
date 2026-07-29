@@ -879,3 +879,82 @@ pre {
 .page-footer a:hover {
   color: var(--accentlight);
 }
+/* ---- Interactive 3D viewers (gallery / comparison) ---- */
+
+.grid-container-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 0.4rem;
+  grid-auto-rows: 1fr;
+  margin: 0 0 0.4rem 0;
+}
+
+.grid-container-5.grid-header {
+  margin-bottom: 0.1rem;
+}
+
+.grid-container-5.grid-header .comparison-label {
+  font-size: 1rem;
+}
+
+.grid-container-5.grid-row {
+  margin-bottom: 0.6rem;
+}
+
+.grid-container-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 0.6rem;
+  grid-auto-rows: 1fr;
+  margin-bottom: 1rem;
+}
+
+.gallery-content {
+  height: 240px;
+}
+
+@media (min-width: 660px) {
+  .gallery-content {
+    height: 320px;
+  }
+}
+
+.gallery-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 0.6rem;
+  order: 3;
+}
+
+.gallery-slider input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.gallery-k {
+  font-size: 0.95rem;
+  color: var(--accent);
+  white-space: nowrap;
+  min-width: 4.2em;
+  text-align: right;
+}
+
+.comparison-subhead {
+  font-size: 1.25rem;
+  color: var(--accent);
+  margin: 1.1rem 0 0.5rem;
+}
+
+/* on narrow screens the 5-wide grids get cramped; shrink cell height */
+@media (max-width: 660px) {
+  .grid-container-5 .comparison-content {
+    height: 110px;
+  }
+
+  .grid-container-5.grid-header .comparison-label {
+    font-size: 0.65rem;
+  }
+}
