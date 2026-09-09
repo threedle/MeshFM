@@ -1,0 +1,7 @@
+torch>=2.0
+numpy
+einops
+PyYAML
+trimesh
+libigl
+scikit-learn

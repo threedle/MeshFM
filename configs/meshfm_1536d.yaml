@@ -1,0 +1,20 @@
+experiment_name: "meshfm_1536d"
+
+# Triplane settings
+triplane_channels_low: 128
+triplane_channels_high: 1536
+triplane_resolution: 128
+
+# Point-voxel encoder
+pvcnn:
+  point_encoder_type: 'pvcnn'
+  use_point_scatter: true
+  z_triplane_channels: 256
+  z_triplane_resolution: 128
+  unet_cfg:
+    depth: 3
+    enabled: true
+    rolled: true
+    use_3d_aware: true
+    start_hidden_channels: 32
+    use_initial_conv: false

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+env/
+
+checkpoints/
+*.pth
+*.ckpt
+out/
+outputs/
+*.npy
+*.npz
